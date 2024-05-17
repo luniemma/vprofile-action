@@ -1,13 +1,15 @@
 name: vprofile action
-on: workflow_dispatch
+
+on:
+  workflow_dispatch:
+
 env:
-    AWS_REGION: us-east-1
-    ECR_REPOSITORY: vprofileapp
-    EKS_CLUSTER: vprofile-eks
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: vprofileapp
+  EKS_CLUSTER: vprofile-eks
 
-
-jobs: 
-  Testing: 
+jobs:
+  Testing:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -18,37 +20,41 @@ jobs:
 
       - name: checkstyle
         run: mvn checkstyle:checkstyle
-    # setup java 11 to be default (sonar-sonar require as of 5.x)
+
+      # Setup Java 11 to be default (SonarQube requires Java 11 as of version 5.x)
       - name: Setup JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v2
         with:
-            distribution: 'temurin' # see 'supported destributions' for available
-            java-version: '11'
-            cache: 'maven'
-    # setup sonar-scannar
-      - name: Setup Sonarcloud
-        uses: warchant/setup-sonar-scanner@v7
+          distribution: 'adopt' # Updated from 'temurin', 'adopt' is another widely used distribution
+          java-version: '11'
+          cache: 'maven'
 
-    # Run sonar-scanner
-      - name: Sonarcloud-Scanner
-        run: sonar-scanner 
-         -Dsonar.host.url=${{ secretS.SONAR_URL }}
-         -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-         -Dsonar.organisation=${{ secrets.SONAR_ORGANISATION }}
-         -Dsonar.projectkey=${{ secrets.SONAR_PROJECT_KEY }} 
-         -Dsonar.sources=src/
-         -Dsonar.junit.reportsPath=target/surefire-reports/
-         -Dsonar.jaccoco.reportsPath=target/jaccoco.exec
-         -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
-         -Dsonar.java.binaries=target/test-classes/com/visualpathit/account
+      # Setup SonarScanner
+      - name: Setup SonarCloud
+        uses: sonarsource/setup-sonar-scanner@v1
+        with:
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          project-key: ${{ secrets.SONAR_PROJECT_KEY }}
+          organization: ${{ secrets.SONAR_ORGANIZATION }}
 
-    # Check the quality gate status
+      # Run SonarScanner
+      - name: SonarCloud Scanner
+        run: sonar-scanner
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
+
+      # Check the quality gate status
       - name: SonarQube Quality Gate check
         id: sonarqube-quality-gate-check
-        uses: sonarsource/sonarqube-quality-gate-action@master
-    # Force to fail steps after specific time
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_URL: ${{ secrets.SONAR_URL }} # optional
+        uses: sonarsource/sonarqube-quality-gate-action@v1
+        with:
+          token: ${{ secrets.SONAR_TOKEN }}
+          projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
+          apiUrl: ${{ secrets.SONAR_URL }}
+          
+      # Force to fail steps after specific time
+      - name: Timeout
+        uses: actions/timeout-action@v2
+        with:
+          seconds: 300 # 5 minutes timeout
 
