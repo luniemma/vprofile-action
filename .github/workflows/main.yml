@@ -1,5 +1,8 @@
 name: vprofile action
-on: workflow_dispatch
+
+on:
+  workflow_dispatch
+
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: vprofileapp
@@ -25,14 +28,15 @@ jobs:
           distribution: 'temurin'  # see 'supported destributions' for available
           java-version: '11'
           cache: maven
-         # setup sonar-scannar
+
+      # setup sonar-scanner
       - name: Setup sonarQube
         uses: warchant/setup-sonar-scanner@v7 
 
       # Setup SonarScanner
       - name: Setup SonarQube
         run: sonar-scanner 
-         -Dsonar.host.url=${{ secretS.SONAR_URL }}
+         -Dsonar.host.url=${{ secrets.SONAR_URL }}
          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
@@ -46,13 +50,12 @@ jobs:
       - name: SonarQube Quality Gate check
         id: sonarqube-quality-gate-check
         uses: sonarsource/sonarqube-quality-gate-action@master
-      # Force to fail steps after specific time
-
+           # Force to fail steps after specific time
         timeout-minutes: 5
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_URL: ${{ secrets.SONAR_URL }} # optional
-      
+         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+         SONAR_URL: ${{ secrets.SONAR_URL }} # optional
+
   BUILD_AND_PUBLISH:
     needs: Testing
     runs-on: ubuntu-latest
@@ -72,5 +75,3 @@ jobs:
           daemon_off: false
           dockerfile: ./Dockerfile
           context: ./
-            
-
