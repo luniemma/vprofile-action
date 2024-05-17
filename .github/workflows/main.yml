@@ -24,7 +24,10 @@ jobs:
         with:
           distribution: 'temurin'  # see 'supported destributions' for available
           java-version: '11'
-          cache: 'maven'
+          cache: maven
+         # setup sonar-scannar
+      - name: Setup sonarQube
+        uses: warchant/setup-sonar-scanner@v7 
 
       # Setup SonarScanner
       - name: Setup SonarQube
@@ -43,7 +46,7 @@ jobs:
       # Check the quality gate status
       - name: SonarQube Quality Gate check
         id: sonarqube-quality-gate-check
-        uses: sonarsource/sonarcloud-github-action@master
+        uses: sonarsource/sonarqube-quality-gate-action@master
       # Force to fail steps after specific time
 
         timeout-minutes: 5
