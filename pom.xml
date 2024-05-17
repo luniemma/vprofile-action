@@ -140,10 +140,6 @@
 	            <artifactId>spring-rabbit</artifactId>
 	            <version>1.7.1.RELEASE</version>
 	    </dependency>
-	    <properties>
-           <sonar.organization>vprofile-action2024</sonar.organization>
-           <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-           </properties>
 	    <dependency>
 	            <groupId>com.rabbitmq</groupId>
 	            <artifactId>amqp-client</artifactId>
