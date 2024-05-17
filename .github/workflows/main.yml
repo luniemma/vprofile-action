@@ -35,7 +35,7 @@ jobs:
          -Dsonar.host.url=${{ secretS.SONAR_URL }}
          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
          -Dsonar.organisation=${{ secrets.SONAR_ORGANISATION }}
-         -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
+         -Dsonar.projectkey=${{ secrets.SONAR_PROJECT_KEY }} 
          -Dsonar.sources=src/
          -Dsonar.junit.reportsPath=target/surefire-reports/
          -Dsonar.jaccoco.reportsPath=target/jaccoco.exec
