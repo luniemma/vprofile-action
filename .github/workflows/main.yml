@@ -1,0 +1,54 @@
+name: vprofile action
+on: workflow_dispatch
+env:
+    AWS_REGION: us-east-1
+    ECR_REPOSITORY: vprofileapp
+    EKS_CLUSTER: vprofile-eks
+
+
+jobs: 
+  Testing: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Maven test
+        run: mvn test
+
+      - name: checkstyle
+        run: mvn checkstyle:checkstyle
+    # setup java 11 to be default (sonar-sonar require as of 5.x)
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3
+        with:
+            distribution: 'temurin' # see 'supported destributions' for available
+            java-version: '11'
+            cache: 'maven'
+    # setup sonar-scannar
+      - name: Setup Sonarcloud
+        uses: warchant/setup-sonar-scanner@v7
+
+    # Run sonar-scanner
+      - name: Sonarcloud-Scanner
+        run: sonar-scanner 
+         -Dsonar.host.url=${{ secretS.SONAR_URL }}
+         -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+         -Dsonar.organisation=${{ secrets.SONAR_ORGANISATION }}
+         -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} 
+         -Dsonar.sources=src/
+         -Dsonar.junit.reportsPath=target/surefire-reports/
+         -Dsonar.jaccoco.reportsPath=target/jaccoco.exec
+         -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+         -Dsonar.java.binaries=target/test-classes/com/visualpathit/account
+
+    # Check the quality gate status
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+    # Force to fail steps after specific time
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_URL: ${{ secrets.SONAR_URL }} # optional
+
