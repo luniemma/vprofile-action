@@ -27,11 +27,11 @@ jobs:
           java-version: '11'
           cache: maven
 
-      # setup sonar-scanner
+      # setup sonar-scanners
       - name: Setup sonarQube
         uses: warchant/setup-sonar-scanner@v7 
 
-      # Setup SonarScanner
+      # Setup SonarScanner78
       - name: Setup SonarQube
         run: sonar-scanner 
          -Dsonar.host.url=${{ secrets.SONAR_URL }}
@@ -82,7 +82,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
