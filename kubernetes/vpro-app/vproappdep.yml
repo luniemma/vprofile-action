@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: vproapp
-        image: vprofile/vprofileapp
+        image: luniemma/web-java-app
         ports:
         - name: vproapp-port
           containerPort: 8080
