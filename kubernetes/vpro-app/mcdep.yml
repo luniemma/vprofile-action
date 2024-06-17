@@ -20,3 +20,10 @@ spec:
         ports:
         - name: vpromc-port
           containerPort: 11211
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 256Mi
