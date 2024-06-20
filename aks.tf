@@ -5,11 +5,11 @@ terraform {
       version = "~> 3.0"
     }
   }
- # backend "azurerm" {
-  #   resource_group_name  = "emma-vm-vnet-migrations-rg"
-  #   storage_account_name = "terraformstatexyz29"
-  #  container_name       = "tfstate"
-  #  key                  = "terraform.aks.tfstates"
+ backend "azurerm" {
+    resource_group_name  = "emma-vm-vnet-migrations-rg"
+    storage_account_name = "terraformstatexyz29"
+   container_name       = "tfstate"
+   key                  = "terraform.aks.tfstates"
    }
 }
 
