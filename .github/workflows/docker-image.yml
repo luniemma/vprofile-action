@@ -7,33 +7,33 @@ on:
     branches: [ main ]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'adopt'
-        
+
     - name: Build with Maven
       run: mvn clean package
-    
+
     - name: Build Docker Image
       run: |
         docker build -t web-java-app:${{ github.sha }} .
-        
+
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-        
-    - name: Push Docker Image
+
+    - name: Tag and Push Docker Image
       run: |
         docker tag web-java-app:${{ github.sha }} luniemma/web-java-app:${{ github.sha }}
+        docker tag web-java-app:${{ github.sha }} luniemma/web-java-app:latest
         docker push luniemma/web-java-app:${{ github.sha }}
+        docker push luniemma/web-java-app:latest
